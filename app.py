@@ -142,6 +142,27 @@ if text_to_analyze:
             fig.update_layout(template="plotly_dark", paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
             st.plotly_chart(fig, use_container_width=True)
         
+        # DEEP SCAN (Fase 3)
+        st.divider()
+        if st.button("🧬 Ejecutar Deep Scan (Lento pero Preciso)"):
+            with st.spinner("Realizando perturbaciones y análisis estilométrico..."):
+                deep_results = detector.deep_scan(text_to_analyze)
+            
+            st.subheader("🔬 Resultados Deep Scan")
+            col_d1, col_d2 = st.columns(2)
+            
+            with col_d1:
+                st.markdown("#### Estilometría")
+                st.write(f"**Riqueza Léxica (TTR):** {deep_results['style']['ttr']:.2f}")
+                st.write(f"**Conectores IA:** {deep_results['style']['connector_count']} encontrados")
+                st.progress(min(1.0, deep_results['style']['connector_density'] * 10)) # Barra visual
+                
+            with col_d2:
+                st.markdown("#### DetectGPT-Lite")
+                dgpt = deep_results.get('detectgpt', {})
+                st.metric("Ratio de Estabilidad", f"{dgpt.get('ratio', 0):.2f}")
+                st.caption(f"Veredicto: {dgpt.get('verdict', 'N/A')}")
+        
         # Interpretación final
         st.markdown("### 🧠 Veredicto Final")
         
